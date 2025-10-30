@@ -19,7 +19,7 @@ static const double MAX_TIME = 0.1;
 static const size_t NTASKS = 11;
 static std::atomic<bool> stop_requested;
 
-static const bool DEFAULT_SCHEDULING = true;
+static const bool DEFAULT_SCHEDULING = false;
 
 int main(int, char**) {
     omp_set_num_threads(2);
@@ -30,6 +30,7 @@ int main(int, char**) {
     Task tasks[NTASKS];
 
     if (DEFAULT_SCHEDULING) {
+// -- Default scheduling --
 #pragma omp parallel for shared(stop_requested)
         for (size_t i = 0; i < NTASKS; ++i) {
             if (stop_requested)
@@ -38,6 +39,7 @@ int main(int, char**) {
             tasks[i].all();
         }
     } else {
+// -- Scheduling with explicit "context switching" --
 #pragma omp parallel for shared(stop_requested)
         for (size_t i = 0; i < NTASKS; ++i) {
             if (stop_requested)
